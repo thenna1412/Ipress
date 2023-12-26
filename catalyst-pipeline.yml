@@ -1,0 +1,53 @@
+version: 2.1
+runners:
+  runner1:
+    config-id: 2
+  runner2:
+    config-id: 3
+  runner3:
+    config-id: 2
+images:
+  hub-image:
+    image: node:16
+    auth:
+      username: thangaram611
+      password: Catalyst@1 
+jobs: 
+  catalyst:
+    image: hub-image
+    # artifacts:
+    #   upload:
+    #     - name: artifact-cli
+    #       files: 
+    #         - "**/*"
+    #       location: cli
+    steps:
+      - echo "Hello"
+  approve:
+    type:
+      type-name: approval
+      type-variables:
+        reviewers:
+          - vipin.kumar+csez_cicd_20@zohotest.com
+        message : Review this
+  zoho:
+    image: hub-image
+    steps:
+      - echo "World"
+      
+  test:
+    image: hub-image
+    steps:
+      - node -e "const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms)); const printNumbers = async () => { for (let i = 1; i <= 50; i++) { console.log(i); await delay(100); } }; printNumbers();"
+stages:
+  - name: build
+    runner: runner2
+    jobs:
+      - catalyst
+      - zoho
+  - name: logs
+    runner: runner2
+    jobs:
+      - approve
+      - test
+pipeline-runner: runner1
